@@ -2,8 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 )
 
 type Data []struct {
@@ -27,14 +31,19 @@ type Data []struct {
 	Audio string `json:"audio"`
 }
 
-func main() {
+var wowsLoaded = false
+var wows Data
+
+func getWows() Data {
+	if wowsLoaded {
+		return wows
+	}
+
 	content, err := ioutil.ReadFile("./data.json")
 
 	if err != nil {
 		log.Fatal("Error when opening file: ", err)
 	}
-
-	var wows Data
 
 	err = json.Unmarshal(content, &wows)
 
@@ -42,5 +51,36 @@ func main() {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
 
-	log.Printf("%v", wows)
+	wowsLoaded = true
+	
+	return wows
+}
+
+func routeHome(w http.ResponseWriter, r *http.Request) {
+	wows := getWows()
+	jsonData, err := json.Marshal(wows)
+
+	if err != nil {
+		log.Printf("Could not marshal JSON: %s\n", err)
+		io.WriteString(w, fmt.Sprintf("Could not marshal JSON: %s\n", err));
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
+}
+
+func main() {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", routeHome)
+
+	err := http.ListenAndServe(":8080", mux)
+
+	if errors.Is(err, http.ErrServerClosed) {
+		log.Printf("Server closed\n")
+	} else {
+		log.Fatalf("Error starting server: %s\n", err)
+	}
 }
