@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/rs/cors"
 )
@@ -80,7 +81,9 @@ func main() {
 
 	handler := cors.Default().Handler(mux)
 
-	err := http.ListenAndServe(":8080", handler)
+	port := ":" + os.Getenv("PORT")
+
+	err := http.ListenAndServe(port, handler)
 
 	if errors.Is(err, http.ErrServerClosed) {
 		log.Printf("Server closed\n")
