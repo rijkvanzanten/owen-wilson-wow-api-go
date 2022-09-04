@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -35,33 +34,8 @@ type Data []struct {
 	Audio string `json:"audio"`
 }
 
-var wowsLoaded = false
-var wows Data
-
-func getWows() Data {
-	if wowsLoaded {
-		return wows
-	}
-
-	content, err := ioutil.ReadFile("./data.json")
-
-	if err != nil {
-		log.Fatal("Error when opening file: ", err)
-	}
-
-	err = json.Unmarshal(content, &wows)
-
-	if err != nil {
-		log.Fatal("Error during Unmarshal(): ", err)
-	}
-
-	wowsLoaded = true
-	
-	return wows
-}
-
 func routeHome(w http.ResponseWriter, r *http.Request) {
-	wows := getWows()
+	wows := GetWows()
 	jsonData, err := json.Marshal(wows)
 
 	if err != nil {
