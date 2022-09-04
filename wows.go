@@ -6,12 +6,33 @@ import (
 	"log"
 )
 
+type Data []struct {
+	Movie string `json:"movie"`
+	Year int16 `json:"year"`
+	ReleaseDate string `json:"release_date"`
+	Director string `json:"director"`
+	Character string `json:"character"`
+	MovieDuration string `json:"movie_duration"`
+	Timestamp string `json:"timestamp"`
+	FullLine string `json:"full_line"`
+	CurrentWowInMovie uint8 `json:"current_wow_in_movie"`
+	TotalWowsInMovie uint8 `json:"total_wows_in_movie"`
+	Poster string `json:"poster"`
+	Video struct {
+		Res1080p string `json:"1080p"`
+		Res720p string `json:"720p"`
+		Res480p string `json:"480p"`
+		Res360p string `json:"360p"`
+	} `json:"video"`
+	Audio string `json:"audio"`
+}
+
 var wowsLoaded = false
 var wows Data
 
-func GetWows() Data {
+func GetWows() *Data {
 	if wowsLoaded {
-		return wows
+		return &wows
 	}
 
 	content, err := ioutil.ReadFile("./data.json")
@@ -28,5 +49,5 @@ func GetWows() Data {
 
 	wowsLoaded = true
 	
-	return wows
+	return &wows
 }
