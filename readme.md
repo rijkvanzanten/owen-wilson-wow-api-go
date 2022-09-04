@@ -1,3 +1,3 @@
-# Go Playground
+# (G)Owen Wilson WOW API
 
-Just a place for me to explore some back-end magic in Go.
+A Go port of the great [Owen Wilson Wow API](https://owen-wilson-wow-api.herokuapp.com). Just a way for me to practice some Go :-)
