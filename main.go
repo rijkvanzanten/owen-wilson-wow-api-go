@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/rs/cors"
 )
 
 type Data []struct {
@@ -76,7 +78,9 @@ func main() {
 
 	mux.HandleFunc("/", routeHome)
 
-	err := http.ListenAndServe(":8080", mux)
+	handler := cors.Default().Handler(mux)
+
+	err := http.ListenAndServe(":8080", handler)
 
 	if errors.Is(err, http.ErrServerClosed) {
 		log.Printf("Server closed\n")
