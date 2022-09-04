@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
@@ -75,19 +76,21 @@ func routeHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	envErr := godotenv.Load()
+
+	if envErr != nil {
+		log.Fatalf("Can't read environment variables from disk\n")
+	}
+
 	mux := http.NewServeMux()
-
 	mux.HandleFunc("/", routeHome)
-
 	handler := cors.Default().Handler(mux)
-
 	port := ":" + os.Getenv("PORT")
+	listenAndServeErr := http.ListenAndServe(port, handler)
 
-	err := http.ListenAndServe(port, handler)
-
-	if errors.Is(err, http.ErrServerClosed) {
+	if errors.Is(listenAndServeErr, http.ErrServerClosed) {
 		log.Printf("Server closed\n")
 	} else {
-		log.Fatalf("Error starting server: %s\n", err)
+		log.Fatalf("Error starting server: %s\n", listenAndServeErr)
 	}
 }
