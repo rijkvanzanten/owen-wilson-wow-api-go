@@ -53,3 +53,29 @@ func RouteMovies(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonData)
 }
+
+func RouteDirectors(w http.ResponseWriter, r *http.Request) {
+	wows := GetWows()
+
+	keys := make(map[string]bool)
+	list := []string{}
+
+	for _, wow := range *wows {
+		director := wow.Director
+
+		if _, value := keys[director]; !value {
+			keys[director] = true
+			list = append(list, director)
+		}
+	}
+
+	jsonData, err := Marshal(list)
+
+	if err != nil {
+		unexpectedError(&w, err)
+		return
+	}
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
+}

@@ -18,8 +18,11 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/", RouteHome)
 	mux.HandleFunc("/movies", RouteMovies)
+	mux.HandleFunc("/directors", RouteDirectors)
+
 	handler := cors.Default().Handler(mux)
 	port := ":" + os.Getenv("PORT")
 	listenAndServeErr := http.ListenAndServe(port, handler)
